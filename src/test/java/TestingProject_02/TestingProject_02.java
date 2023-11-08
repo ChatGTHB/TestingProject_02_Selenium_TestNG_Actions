@@ -1,285 +1,273 @@
 package TestingProject_02;
 
-
-import utility.BaseDriver;
-import org.junit.*;
+import com.github.javafaker.Faker;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.*;
 import org.openqa.selenium.support.ui.*;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import utility.BaseDriver;
 
+import java.time.*;
+import java.util.List;
 
-import java.time.Duration;
 
 public class TestingProject_02 extends BaseDriver {
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+    Faker randomGenerator = new Faker();
+    Actions actions = new Actions(driver);
+    String password = "password";
+    String randomEmail;
+    String randomName;
+    String randomSurname;
+    Action action;
 
-    @Test
-    public void test01() {
+    @Test(priority = 1)
+    public void registerTest() {
 
         driver.get("http://demowebshop.tricentis.com/");
 
-        Actions actions = new Actions(driver);
+        randomName = randomGenerator.name().firstName();
+        randomSurname = randomGenerator.name().lastName();
+        randomEmail = randomGenerator.internet().emailAddress();
+        WebElement registerButton = driver.findElement(By.linkText("Register"));
 
-        WebElement register = driver.findElement(By.linkText("Register"));
-        Action action = actions.moveToElement(register).click().build();
+        Action action = actions.moveToElement(registerButton).click().build();
         action.perform();
 
-        WebElement gender = driver.findElement(By.id("gender-male"));
-        action = actions.moveToElement(gender).click().build();
+        WebElement maleButton = driver.findElement(By.cssSelector("[id='gender-male']"));
+        action = actions
+                .moveToElement(maleButton)
+                .click()
+                .sendKeys(Keys.TAB)
+                .sendKeys(randomName)
+                .sendKeys(Keys.TAB)
+                .sendKeys(randomSurname)
+                .sendKeys(Keys.TAB)
+                .sendKeys(randomEmail)
+                .sendKeys(Keys.TAB)
+                .sendKeys(password)
+                .sendKeys(Keys.TAB)
+                .sendKeys(password)
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.ENTER)
+                .build();
         action.perform();
 
-        WebElement firstName = driver.findElement(By.id("FirstName"));
-        action = actions.moveToElement(firstName).click().sendKeys("Name").build();
-        action.perform();
+        WebElement emailConfirmation = driver.findElement(By.linkText(randomEmail));
+        Assert.assertEquals(emailConfirmation.getText(), randomEmail);
 
-        WebElement lastName = driver.findElement(By.id("LastName"));
-        action = actions.moveToElement(lastName).click().sendKeys("Surname").build();
-        action.perform();
-
-        WebElement eMail = driver.findElement(By.id("Email"));
-        // Random mail generation line to not change mail every time during the test
-        action = actions.moveToElement(eMail).click().sendKeys("testing" + ((int) (Math.random() * 10000)) + "@testing.com").build();
-        // The mail creation line that will remain fixed under normal conditions:
-        // action = actions.moveToElement(eMail).click().sendKeys("testing@testing.com").build();
-        action.perform();
-
-        WebElement password = driver.findElement(By.id("Password"));
-        action = actions.moveToElement(password).click().sendKeys("password").build();
-        action.perform();
-
-        WebElement confirmPassword = driver.findElement(By.id("ConfirmPassword"));
-        action = actions.moveToElement(confirmPassword).click().sendKeys("password").build();
-        action.perform();
-
-        WebElement registerButton = driver.findElement(By.id("register-button"));
-        action = actions.moveToElement(registerButton).click().build();
-        action.perform();
-
-        WebElement confirmation = driver.findElement(By.className("result"));
-
-        Assert.assertEquals("Your registration completed", confirmation.getText());
-
-        // Since re-registration will be done in Test 2, logout was made.
-        WebElement logout = driver.findElement(By.linkText("Log out"));
-        action = actions.moveToElement(logout).click().build();
-        action.perform();
-
-    }
-
-    @Test
-    public void test02() {
-        driver.get("http://demowebshop.tricentis.com/");
-
-        Actions actions = new Actions(driver);
-
-        WebElement register = driver.findElement(By.linkText("Register"));
-        Action action = actions.moveToElement(register).click().build();
-        action.perform();
-
-        WebElement gender = driver.findElement(By.id("gender-male"));
-        action = actions.moveToElement(gender).click().build();
-        action.perform();
-
-        WebElement firstName = driver.findElement(By.id("FirstName"));
-        action = actions.moveToElement(firstName).click().sendKeys("Name").build();
-        action.perform();
-
-        WebElement lastName = driver.findElement(By.id("LastName"));
-        action = actions.moveToElement(lastName).click().sendKeys("Surname").build();
-        action.perform();
-
-        WebElement eMail = driver.findElement(By.id("Email"));
-        action = actions.moveToElement(eMail).click().sendKeys("testing@testing.com").build();
-        action.perform();
-
-        WebElement password = driver.findElement(By.id("Password"));
-        action = actions.moveToElement(password).click().sendKeys("password").build();
-        action.perform();
-
-        WebElement confirmPassword = driver.findElement(By.id("ConfirmPassword"));
-        action = actions.moveToElement(confirmPassword).click().sendKeys("password").build();
-        action.perform();
-
-        WebElement registerButton = driver.findElement(By.id("register-button"));
-        action = actions.moveToElement(registerButton).click().build();
-        action.perform();
-
-        WebElement confirmation = driver.findElement(By.xpath("//li[text()='The specified email already exists']"));
-
-        Assert.assertEquals("The specified email already exists", confirmation.getText());
-    }
-
-    @Test
-    public void test03() {
-        driver.get("http://demowebshop.tricentis.com/");
-
-        Actions actions = new Actions(driver);
-
-        WebElement login = driver.findElement(By.linkText("Log in"));
-        Action action = actions.moveToElement(login).click().build();
-        action.perform();
-
-        WebElement eMail = driver.findElement(By.id("Email"));
-        action = actions.moveToElement(eMail).click().sendKeys("testing8567@testing.com").build();
-        action.perform();
-
-        WebElement password = driver.findElement(By.id("Password"));
-        action = actions.moveToElement(password).click().sendKeys("password").build();
-        action.perform();
-
-        WebElement loginButton = driver.findElement(By.xpath("//input[@class='button-1 login-button']"));
-        action = actions.moveToElement(loginButton).click().build();
-        action.perform();
-
-        WebElement logout = driver.findElement(By.linkText("Log out"));
-
-        Assert.assertTrue(logout.isDisplayed());
-
-        // Since there will be a re-login process in Test 4, logout has been made.
-        action = actions.moveToElement(logout).click().build();
+        WebElement logOut = driver.findElement(By.linkText("Log out"));
+        action = actions.moveToElement(logOut).click().build();
         action.perform();
     }
 
-    @Test
-    public void test04() {
+    @Test(dependsOnMethods = "registerTest", priority = 2)
+    public void registerTestNegative() {
+
         driver.get("http://demowebshop.tricentis.com/");
+        WebElement registerButton = driver.findElement(By.linkText("Register"));
 
-        Actions actions = new Actions(driver);
-
-        WebElement login = driver.findElement(By.linkText("Log in"));
-        Action action = actions.moveToElement(login).click().build();
+        Action action = actions.moveToElement(registerButton).click().build();
         action.perform();
 
-        WebElement eMail = driver.findElement(By.id("Email"));
-        // Random mail creation line because wrong mail entry is requested
-        action = actions.moveToElement(eMail).click().sendKeys("testing" + ((int) (Math.random() * 10000)) + "@testing.com").build();
+        WebElement maleButton = driver.findElement(By.cssSelector("[id='gender-male']"));
+        action = actions
+                .moveToElement(maleButton)
+                .click()
+                .sendKeys(Keys.TAB)
+                .sendKeys(randomName)
+                .sendKeys(Keys.TAB)
+                .sendKeys(randomSurname)
+                .sendKeys(Keys.TAB)
+                .sendKeys(randomEmail)
+                .sendKeys(Keys.TAB)
+                .sendKeys(password)
+                .sendKeys(Keys.TAB)
+                .sendKeys(password)
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.ENTER)
+                .build();
         action.perform();
 
-        WebElement password = driver.findElement(By.id("Password"));
-        action = actions.moveToElement(password).click().sendKeys("password" + ((int) (Math.random() * 10000))).build();
-        action.perform();
-
-        WebElement loginButton = driver.findElement(By.xpath("//input[@class='button-1 login-button']"));
-        action = actions.moveToElement(loginButton).click().build();
-        action.perform();
-
-        WebElement confirmation = driver.findElement(By.xpath("//span[text()='Login was unsuccessful. Please correct the errors and try again.']"));
-
-        Assert.assertEquals("Login was unsuccessful. Please correct the errors and try again.", confirmation.getText());
+        WebElement alreadyExists = driver.findElement(By.xpath("//li[text()='The specified email already exists']"));
+        Assert.assertEquals(alreadyExists.getText(), "The specified email already exists");
     }
 
-    @Test
-    public void test05() {
+    @Test(dependsOnMethods = "registerTest", priority = 3)
+    public void loginTest() {
+
         driver.get("http://demowebshop.tricentis.com/");
 
-        Actions actions = new Actions(driver);
-
-        Duration duration = Duration.ofSeconds(30);
-        WebDriverWait wait = new WebDriverWait(driver, duration);
-
-        WebElement login = driver.findElement(By.linkText("Log in"));
-        Action action = actions.moveToElement(login).click().build();
+        WebElement loginButton = driver.findElement(By.linkText("Log in"));
+        action = actions
+                .moveToElement(loginButton)
+                .click()
+                .build();
         action.perform();
 
-        WebElement eMail = driver.findElement(By.id("Email"));
-        action = actions.moveToElement(eMail).click().sendKeys("testing8567@testing.com").build();
+        WebElement email = driver.findElement(By.cssSelector("[id='Email']"));
+
+        action = actions
+                .moveToElement(email)
+                .sendKeys(randomEmail)
+                .sendKeys(Keys.TAB)
+                .sendKeys(password)
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.ENTER)
+                .build();
+
         action.perform();
 
-        WebElement password = driver.findElement(By.id("Password"));
-        action = actions.moveToElement(password).click().sendKeys("password").build();
+        WebElement logOut = driver.findElement(By.linkText("Log out"));
+        Assert.assertEquals(logOut.getText(), "Log out", "Login unsuccessful");
+        logOut.click();
+    }
+
+    @Test(dependsOnMethods = "registerTest", priority = 4)
+    public void loginTestNegative() {
+
+        driver.get("http://demowebshop.tricentis.com/");
+
+        WebElement loginButton = driver.findElement(By.xpath("//a[text()='Log in']"));
+        action = actions
+                .moveToElement(loginButton)
+                .click()
+                .build();
         action.perform();
 
-        WebElement loginButton = driver.findElement(By.xpath("//input[@class='button-1 login-button']"));
-        action = actions.moveToElement(loginButton).click().build();
+        WebElement email = driver.findElement(By.cssSelector("[id='Email']"));
+
+        action = actions
+                .moveToElement(email)
+                .sendKeys(randomGenerator.internet().emailAddress())
+                .sendKeys(Keys.TAB)
+                .sendKeys(randomGenerator.internet().password())
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.ENTER)
+                .build();
+
         action.perform();
 
-        WebElement computers = driver.findElement(By.linkText("COMPUTERS"));
-        action = actions.moveToElement(computers).build();
+        WebElement unsuccessfulLogin = driver.findElement(By.xpath("//span[text()='Login was unsuccessful. Please correct the errors and try again.']"));
+        Assert.assertTrue(unsuccessfulLogin.getText().contains("Login was unsuccessful"));
+    }
+
+    @Test(dependsOnMethods = "registerTest", priority = 5)
+    public void orderTest() {
+
+        driver.get("http://demowebshop.tricentis.com/");
+
+        WebElement loginButton = driver.findElement(By.linkText("Log in"));
+        action = actions
+                .moveToElement(loginButton)
+                .click()
+                .build();
+        action.perform();
+
+        WebElement email = driver.findElement(By.cssSelector("[id='Email']"));
+
+        action = actions
+                .moveToElement(email)
+                .sendKeys(randomEmail)
+                .sendKeys(Keys.TAB)
+                .sendKeys(password)
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.ENTER)
+                .build();
+
+        action.perform();
+
+        WebElement computersBigPunto = driver.findElement(By.linkText("COMPUTERS"));
+
+        action = actions
+                .moveToElement(computersBigPunto)
+                .build();
+
         action.perform();
 
         WebElement notebooks = driver.findElement(By.linkText("Notebooks"));
-        action = actions.moveToElement(notebooks).click().build();
+        notebooks.click();
+
+        WebElement laptop = driver.findElement(By.linkText("14.1-inch Laptop"));
+        action = actions.moveToElement(laptop).click().build();
         action.perform();
 
-        WebElement notebook14Inch = driver.findElement(By.xpath("(//div[@class='details']//following::a)[1]"));
-        action = actions.moveToElement(notebook14Inch).click().build();
+        WebElement addToCard = driver.findElement(By.cssSelector("[id='add-to-cart-button-31']"));
+        addToCard.click();
+
+        WebElement confirmationMessage = driver.findElement(By.xpath("//p[text()='The product has been added to your ']"));
+        Assert.assertTrue(confirmationMessage.getText().contains("The product has been added to your"));
+
+        WebElement shoppingCard = driver.findElement(By.xpath("//span[text()='Shopping cart']"));
+        action = actions.moveToElement(shoppingCard).click().build();
         action.perform();
 
-        WebElement laptopAddToCart = driver.findElement(By.id("add-to-cart-button-31"));
-        action = actions.moveToElement(laptopAddToCart).click().build();
+        List<WebElement> products = driver.findElements(By.xpath("//td[@class='product']"));
+        String notebook = null;
+
+        //Assert.assertTrue("the process failed", products.get(0).getText().contains("14.1-inch Laptop"));
+
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getText().equals("14.1-inch Laptop")) {
+                notebook = products.get(i).getText();
+                break;
+            }
+        }
+        Assert.assertEquals("14.1-inch Laptop", notebook);
+
+        WebElement checkBox = driver.findElement(By.cssSelector("[id='termsofservice']"));
+        checkBox.click();
+
+        WebElement checkOut = driver.findElement(By.cssSelector("[id='checkout']"));
+        checkOut.click();
+
+        WebElement countrySelectMenu = driver.findElement(By.cssSelector("[id='BillingNewAddress_CountryId']"));
+        Select country = new Select(countrySelectMenu);
+        country.selectByVisibleText("United States");
+
+        action = actions
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.TAB)
+                .sendKeys(randomGenerator.address().city())
+                .sendKeys(Keys.TAB)
+                .sendKeys(randomGenerator.address().fullAddress())
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.TAB)
+                .sendKeys(randomGenerator.address().countryCode())
+                .sendKeys(Keys.TAB)
+                .sendKeys(randomGenerator.phoneNumber().cellPhone())
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.TAB)
+                .sendKeys(Keys.ENTER)
+                .build();
         action.perform();
 
-        WebElement confirmation = driver.findElement(By.xpath("//p[text()='The product has been added to your ']"));
+        WebElement continue2 = driver.findElement(By.xpath("(//input[@title='Continue'])[2]"));
+        continue2.click();
 
-        Assert.assertTrue(confirmation.getText().contains("The product has been added to your"));
+        WebElement continue3 = driver.findElement(By.xpath("//input[@onclick='ShippingMethod.save()']"));
+        continue3.click();
 
-        WebElement shoppingCart = driver.findElement(By.xpath("//span[text()='Shopping cart']"));
-        action = actions.moveToElement(shoppingCart).click().build();
-        action.perform();
+        WebElement continue4 = driver.findElement(By.xpath("//input[@onclick='PaymentMethod.save()']"));
+        continue4.click();
 
-        WebElement notebook14InchControl = driver.findElement(By.xpath("(//a[text()='14.1-inch Laptop'])[2]"));
+        WebElement continue5 = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@onclick='PaymentInfo.save()']")));
+        continue5.click();
 
-        Assert.assertTrue(notebook14InchControl.getText().contains("14.1-inch Laptop"));
+        js.executeScript("window.scrollTo(0, document.body.scrollHeight);"); // Goes to the end of the page.
+        WebElement confirmOrder = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@onclick='ConfirmOrder.save()']")));
+        js.executeScript("arguments[0].click();", confirmOrder);
 
-        WebElement agree = driver.findElement(By.id("termsofservice"));
-        action = actions.moveToElement(agree).click().build();
-        action.perform();
-
-        WebElement checkoutButton = driver.findElement(By.id("checkout"));
-        action = actions.moveToElement(checkoutButton).click().build();
-        action.perform();
-
-        WebElement newAddressMenu = driver.findElement(By.id("billing-address-select"));
-        Select newAdresSelectMenu = new Select(newAddressMenu);
-        newAdresSelectMenu.selectByVisibleText("New Address");
-
-        WebElement countryMenu = driver.findElement(By.name("BillingNewAddress.CountryId"));
-        Select countrySelectMenu = new Select(countryMenu);
-        countrySelectMenu.selectByValue("77");
-
-        WebElement city = driver.findElement(By.id("BillingNewAddress_City"));
-        action = actions.moveToElement(city).click().sendKeys("Ankara").build();
-        action.perform();
-
-        WebElement address1 = driver.findElement(By.id("BillingNewAddress_Address1"));
-        action = actions.moveToElement(address1).click().sendKeys("Kavaklıdere").build();
-        action.perform();
-
-        WebElement zipCode = driver.findElement(By.name("BillingNewAddress.ZipPostalCode"));
-        action = actions.moveToElement(zipCode).click().sendKeys("06000").build();
-        action.perform();
-
-        WebElement phoneNumber = driver.findElement(By.id("BillingNewAddress_PhoneNumber"));
-        action = actions.moveToElement(phoneNumber).click().sendKeys("060123456789").build();
-        action.perform();
-
-        WebElement continueButtonBillingAddress = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//input[@title='Continue'])[1]")));
-        action = actions.moveToElement(continueButtonBillingAddress).click().build();
-        action.perform();
-
-        WebElement continueButtonShippingAddress = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@onclick='Shipping.save()']")));
-        action = actions.moveToElement(continueButtonShippingAddress).click().build();
-        action.perform();
-
-        WebElement continueButtonShippingMethod = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@onclick='ShippingMethod.save()']")));
-        action = actions.moveToElement(continueButtonShippingMethod).click().build();
-        action.perform();
-
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
-        WebElement continueButtonPaymentMethod = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@onclick='PaymentMethod.save()']")));
-        js.executeScript("arguments[0].click();", continueButtonPaymentMethod);
-
-        WebElement continueButtonPaymentInformation = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@onclick='PaymentInfo.save()']")));
-        action = actions.moveToElement(continueButtonPaymentInformation).click().build();
-        action.perform();
-
-        WebElement confirmOrderButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@onclick='ConfirmOrder.save()']")));
-        action = actions.moveToElement(confirmOrderButton).click().build();
-        action.perform();
-
-        WebElement lastConfirmation = driver.findElement(By.xpath("//strong[text()='Your order has been successfully processed!']"));
-
-        Assert.assertEquals("Your order has been successfully processed!", lastConfirmation.getText());
+        WebElement confirmationText = driver.findElement(By.xpath("//strong[text()='Your order has been successfully processed!']"));
+        Assert.assertEquals(confirmationText.getText(), "Your order has been successfully processed!","Order successful" );
 
         waitAndClose();
     }

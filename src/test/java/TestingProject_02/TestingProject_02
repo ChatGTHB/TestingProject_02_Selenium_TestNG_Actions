@@ -2,7 +2,7 @@ Testing Project 2
 
 url: http://demowebshop.tricentis.com/
 
- ➢ Bu projeyi Java ve Selenium kütüphanesini kullanarak test edeceksiniz
+ ➢ Bu projeyi Java, Selenium ve TestNG kullanarak test edeceksiniz
  ➢ Action class kullanılacak
 
  Test Senaryoları
