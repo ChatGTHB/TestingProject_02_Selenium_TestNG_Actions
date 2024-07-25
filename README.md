@@ -58,10 +58,7 @@ To install and set up the project using IntelliJ IDEA:
 
 1. Open IntelliJ IDEA.
 2. Select `File > New > Project from Version Control`.
-3. In the URL field, enter the repository URL:
-   \`\`\`sh
-   https://github.com/ChatGTHB/TestingProject_02_Selenium_TestNG_Actions
-   \`\`\`
+3. In the URL field, enter the repository URL: `https://github.com/ChatGTHB/TestingProject_02_Selenium_TestNG_Actions`
 4. Click `Clone`.
 5. IntelliJ will automatically detect the `pom.xml` file and import the Maven project.
 6. Ensure that all Maven dependencies are downloaded. You can check this in the `Maven` tool window in IntelliJ.
